@@ -1,0 +1,20 @@
+{
+  "name": "shikibot",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@telegraf/types": "^7.1.0",
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "start": "bun index.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ky": "^1.7.2",
+    "mobx": "^6.13.3",
+    "telegraf": "^4.16.3"
+  }
+}
