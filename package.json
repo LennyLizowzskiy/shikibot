@@ -6,6 +6,7 @@
     "@telegraf/types": "^7.1.0",
     "@types/bun": "latest"
   },
+  "license": "Unlicense",
   "scripts": {
     "start": "bun index.ts"
   },
@@ -14,7 +15,6 @@
   },
   "dependencies": {
     "ky": "^1.7.2",
-    "mobx": "^6.13.3",
     "telegraf": "^4.16.3"
   }
 }

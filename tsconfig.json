@@ -5,7 +5,6 @@
       "target": "ESNext",
       "module": "ESNext",
       "moduleDetection": "force",
-      "experimentalDecorators": true,
       "esModuleInterop": true,
       "allowJs": true,
   
