@@ -192,23 +192,23 @@ bot.on("inline_query", async (ctx) => {
                         let gstr = anime.genres.map((genre) => {
                             return genre.russian
                         }).join(", ")
-                        msgSections[0].push(responseLine("Жанры", gstr))
+                        msgSections[1].push(responseLine("Жанры", gstr))
                     }
-                    if (anime.kind != undefined) { msgSections[1].push(responseLine("Тип", anime.kind.toUpperCase())) }
-                    if (anime.rating != undefined) { msgSections[1].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
-                    if (anime.status != undefined) { msgSections[1].push(responseLine("Статус", anime.status.toUpperCase())) }
+                    if (anime.kind != undefined) { msgSections[2].push(responseLine("Тип", anime.kind.toUpperCase())) }
+                    if (anime.rating != undefined) { msgSections[2].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
+                    if (anime.status != undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
                     if (anime.episodesAired != anime.episodes && anime.status != "released" && anime.episodesAired != 0) {
                         let re = `${anime.episodesAired} / ${anime.episodes}`
                         if (anime.nextEpisodeAt != undefined) {
                             const nextEpDate = new Date(anime.nextEpisodeAt);
                             re += ` (след. эпизод ожидается ${nextEpDate.getDay()}/${nextEpDate.getMonth()})`
                         }
-                        msgSections[1].push(responseLine("Эпизодов", re))
+                        msgSections[2].push(responseLine("Эпизодов", re))
                     } else if (anime.kind != "movie" && anime.kind != "music") {
-                        msgSections[1].push(responseLine("Эпизодов", anime.episodes.toString()))
+                        msgSections[2].push(responseLine("Эпизодов", anime.episodes.toString()))
                     }
                     if (anime.score != undefined && anime.score != 0) {
-                        msgSections[2].push(responseLine("Оценка", anime.score.toString()))
+                        msgSections[3].push(responseLine("Оценка", anime.score.toString()))
                     }
 
                     const text = msgSections
@@ -259,19 +259,19 @@ bot.on("inline_query", async (ctx) => {
                         let gstr = manga.genres.map((genre) => {
                             return genre.russian
                         }).join(", ")
-                        msgSections[0].push(responseLine("Жанры", gstr))
+                        msgSections[1].push(responseLine("Жанры", gstr))
                     }
-                    if (manga.kind != undefined) { msgSections[1].push(responseLine("Тип", manga.kind.toUpperCase())) }
-                    if (manga.status != undefined) { msgSections[1].push(responseLine("Статус", manga.status.toUpperCase())) }
+                    if (manga.kind != undefined) { msgSections[2].push(responseLine("Тип", manga.kind.toUpperCase())) }
+                    if (manga.status != undefined) { msgSections[2].push(responseLine("Статус", manga.status.toUpperCase())) }
                     if (manga.chapters != undefined && manga.volumes != undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`))
+                        msgSections[2].push(responseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`))
                     } else if (manga.volumes != undefined && manga.chapters == undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Томов", `${manga.volumes}`))
+                        msgSections[2].push(responseLine("Томов", `${manga.volumes}`))
                     } else if (manga.volumes == undefined && manga.chapters != undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Глав", `${manga.chapters}`))
+                        msgSections[2].push(responseLine("Глав", `${manga.chapters}`))
                     }
                     if (manga.score != undefined && manga.score != 0) {
-                        msgSections[2].push(responseLine("Оценка", manga.score.toString()))
+                        msgSections[3].push(responseLine("Оценка", manga.score.toString()))
                     }
 
                     const text = msgSections
