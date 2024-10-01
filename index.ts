@@ -139,6 +139,7 @@ const SHIKI_CREDENTIALS: ShikimoriCredentials = shiki_env;
 
 const bot = new Telegraf(tg_bot_key)
 
+const allowedTyps = ["a", "а", "anime", "аниме", "m", "м", "manga", "манга"]
 bot.on("inline_query", async (ctx) => {
     const inlineQuery = ctx.inlineQuery
     const splits = inlineQuery.query.split(" ")
@@ -147,7 +148,7 @@ bot.on("inline_query", async (ctx) => {
     let invalidRequest = false
 
     const typ = splits.at(0)
-    if ((typ !== "anime" && typ !== "manga") || typ === undefined) {
+    if (typ === undefined || !allowedTyps.includes(typ)) {
         invalidRequest = true
     }
 
@@ -161,7 +162,7 @@ bot.on("inline_query", async (ctx) => {
             {
                 type: "article",
                 id: `${inlineQuery.id}_0`,
-                title: "[anime|manga] [search query]",
+                title: "[(а)ниме|(a)nime|(m)anga|(м)анга] /запрос/",
                 input_message_content: {
                     message_text: `Код бота: ${GIT_REPO}`
                 }
@@ -173,6 +174,9 @@ bot.on("inline_query", async (ctx) => {
     }
 
     switch (typ) {
+        case "a":
+        case "а":
+        case "аниме":
         case "anime":
             const resa = await requestAnimes(searchQuery)
 
@@ -192,19 +196,19 @@ bot.on("inline_query", async (ctx) => {
                     }
                     if (anime.kind != undefined) { msgSections[1].push(responseLine("Тип", anime.kind.toUpperCase())) }
                     if (anime.rating != undefined) { msgSections[1].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
-                    if (anime.status != undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
+                    if (anime.status != undefined) { msgSections[1].push(responseLine("Статус", anime.status.toUpperCase())) }
                     if (anime.episodesAired != anime.episodes && anime.status != "released" && anime.episodesAired != 0) {
                         let re = `${anime.episodesAired} / ${anime.episodes}`
                         if (anime.nextEpisodeAt != undefined) {
                             const nextEpDate = new Date(anime.nextEpisodeAt);
                             re += ` (след. эпизод ожидается ${nextEpDate.getDay()}/${nextEpDate.getMonth()})`
                         }
-                        msgSections[2].push(responseLine("Эпизодов", re))
-                    } else {
-                        msgSections[2].push(responseLine("Эпизодов", anime.episodes.toString()))
+                        msgSections[1].push(responseLine("Эпизодов", re))
+                    } else if (anime.kind != "movie" && anime.kind != "music") {
+                        msgSections[1].push(responseLine("Эпизодов", anime.episodes.toString()))
                     }
                     if (anime.score != undefined && anime.score != 0) {
-                        msgSections[3].push(responseLine("Оценка", anime.score.toString()))
+                        msgSections[2].push(responseLine("Оценка", anime.score.toString()))
                     }
 
                     const text = msgSections
@@ -219,7 +223,7 @@ bot.on("inline_query", async (ctx) => {
                             id: `${inlineQuery.id}_${index}`,
                             title: anime.russian ?? anime.english ?? anime.name,
                             description: anime.synonyms.join(" / "),
-                            thumbnail_url: anime.poster.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
+                            thumbnail_url: anime?.poster?.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
                             input_message_content: {
                                 message_text: text,
                                 parse_mode: "HTML",
@@ -236,7 +240,10 @@ bot.on("inline_query", async (ctx) => {
             }
 
             break;
-
+        
+        case "m":
+        case "м":
+        case "манга":
         case "manga":
             const resm = await requestMangas(searchQuery)
 
@@ -257,11 +264,11 @@ bot.on("inline_query", async (ctx) => {
                     if (manga.kind != undefined) { msgSections[1].push(responseLine("Тип", manga.kind.toUpperCase())) }
                     if (manga.status != undefined) { msgSections[1].push(responseLine("Статус", manga.status.toUpperCase())) }
                     if (manga.chapters != undefined && manga.volumes != undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Томов/Глав", "\n" + `${manga.volumes}/${manga.chapters}`))
+                        msgSections[1].push(responseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`))
                     } else if (manga.volumes != undefined && manga.chapters == undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Томов", "\n" + `${manga.volumes}`))
+                        msgSections[1].push(responseLine("Томов", `${manga.volumes}`))
                     } else if (manga.volumes == undefined && manga.chapters != undefined && manga.chapters != 0 && manga.volumes != 0) {
-                        msgSections[1].push(responseLine("Глав", "\n" + `${manga.chapters}`))
+                        msgSections[1].push(responseLine("Глав", `${manga.chapters}`))
                     }
                     if (manga.score != undefined && manga.score != 0) {
                         msgSections[2].push(responseLine("Оценка", manga.score.toString()))
@@ -279,7 +286,7 @@ bot.on("inline_query", async (ctx) => {
                             id: `${inlineQuery.id}_${index}`,
                             title: manga.russian ?? manga.english ?? manga.name,
                             description: manga.synonyms.join(" / "),
-                            thumbnail_url: manga.poster.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
+                            thumbnail_url: manga?.poster?.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
                             input_message_content: {
                                 message_text: text,
                                 parse_mode: "HTML",
