@@ -186,7 +186,7 @@ bot.on("inline_query", async (ctx) => {
                 let index = 0
                 resa.forEach((anime) => {
                     const msgSections: string[][] = [[], [], [], []];
-                    if (anime.russian != undefined) { msgSections[0].push(responseLine("Название на русском", anime.russian)) }
+                    if (anime.russian !== undefined) { msgSections[0].push(responseLine("Название на русском", anime.russian)) }
                     msgSections[0].push(responseLine("Оригинальное название", anime.name))
                     if (anime.genres.length !== 0) {
                         let gstr = anime.genres.map((genre) => {
@@ -194,20 +194,20 @@ bot.on("inline_query", async (ctx) => {
                         }).join(", ")
                         msgSections[1].push(responseLine("Жанры", gstr))
                     }
-                    if (anime.kind != undefined) { msgSections[2].push(responseLine("Тип", anime.kind.toUpperCase())) }
-                    if (anime.rating != undefined) { msgSections[2].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
-                    if (anime.status != undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
-                    if (anime.episodesAired != anime.episodes && anime.status != "released" && anime.episodesAired != 0) {
+                    if (anime.kind !== undefined) { msgSections[2].push(responseLine("Тип", anime.kind.toUpperCase())) }
+                    if (anime.rating !== undefined) { msgSections[2].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
+                    if (anime.status !== undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
+                    if (anime.episodesAired !== anime.episodes && anime.status !== "released" && anime.episodesAired !== 0 && anime.episodes !== 0) {
                         let re = `${anime.episodesAired} / ${anime.episodes}`
-                        if (anime.nextEpisodeAt != undefined) {
+                        if (anime.nextEpisodeAt !== undefined) {
                             const nextEpDate = new Date(anime.nextEpisodeAt);
                             re += ` (след. эпизод ожидается ${nextEpDate.getDay()}/${nextEpDate.getMonth()})`
                         }
                         msgSections[2].push(responseLine("Эпизодов", re))
-                    } else if (anime.kind != "movie" && anime.kind != "music") {
+                    } else if (anime.kind !== "movie" && anime.kind !== "music" && anime.episodes !== 0) {
                         msgSections[2].push(responseLine("Эпизодов", anime.episodes.toString()))
                     }
-                    if (anime.score != undefined && anime.score != 0) {
+                    if (anime.score !== undefined && anime.score !== 0) {
                         msgSections[3].push(responseLine("Оценка", anime.score.toString()))
                     }
 
@@ -253,7 +253,7 @@ bot.on("inline_query", async (ctx) => {
                 let index = 0
                 resm.forEach((manga) => {
                     const msgSections: string[][] = [[], [], [], []];
-                    if (manga.russian != undefined) { msgSections[0].push(responseLine("Название на русском", manga.russian)) }
+                    if (manga.russian !== undefined) { msgSections[0].push(responseLine("Название на русском", manga.russian)) }
                     msgSections[0].push(responseLine("Оригинальное название", manga.name))
                     if (manga.genres.length !== 0) {
                         let gstr = manga.genres.map((genre) => {
@@ -261,16 +261,16 @@ bot.on("inline_query", async (ctx) => {
                         }).join(", ")
                         msgSections[1].push(responseLine("Жанры", gstr))
                     }
-                    if (manga.kind != undefined) { msgSections[2].push(responseLine("Тип", manga.kind.toUpperCase())) }
-                    if (manga.status != undefined) { msgSections[2].push(responseLine("Статус", manga.status.toUpperCase())) }
-                    if (manga.chapters != undefined && manga.volumes != undefined && manga.chapters != 0 && manga.volumes != 0) {
+                    if (manga.kind !== undefined) { msgSections[2].push(responseLine("Тип", manga.kind.toUpperCase())) }
+                    if (manga.status !== undefined) { msgSections[2].push(responseLine("Статус", manga.status.toUpperCase())) }
+                    if (manga.chapters !== undefined && manga.volumes !== undefined && manga.chapters !== 0 && manga.volumes !== 0) {
                         msgSections[2].push(responseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`))
-                    } else if (manga.volumes != undefined && manga.chapters == undefined && manga.chapters != 0 && manga.volumes != 0) {
+                    } else if (manga.volumes !== undefined && manga.chapters == undefined && manga.volumes !== 0) {
                         msgSections[2].push(responseLine("Томов", `${manga.volumes}`))
-                    } else if (manga.volumes == undefined && manga.chapters != undefined && manga.chapters != 0 && manga.volumes != 0) {
+                    } else if (manga.volumes === undefined && manga.chapters !== undefined && manga.chapters !== 0) {
                         msgSections[2].push(responseLine("Глав", `${manga.chapters}`))
                     }
-                    if (manga.score != undefined && manga.score != 0) {
+                    if (manga.score !== undefined && manga.score !== 0) {
                         msgSections[3].push(responseLine("Оценка", manga.score.toString()))
                     }
 
