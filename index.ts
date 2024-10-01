@@ -184,6 +184,12 @@ bot.on("inline_query", async (ctx) => {
                     const msgSections: string[][] = [[], [], [], []];
                     if (anime.russian != undefined) { msgSections[0].push(responseLine("Название на русском", anime.russian)) }
                     msgSections[0].push(responseLine("Оригинальное название", anime.name))
+                    if (anime.genres.length !== 0) {
+                        let gstr = anime.genres.map((genre) => {
+                            return genre.russian
+                        }).join(", ")
+                        msgSections[0].push(responseLine("Жанры", gstr))
+                    }
                     if (anime.kind != undefined) { msgSections[1].push(responseLine("Тип", anime.kind.toUpperCase())) }
                     if (anime.rating != undefined) { msgSections[1].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
                     if (anime.status != undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
@@ -196,12 +202,6 @@ bot.on("inline_query", async (ctx) => {
                         msgSections[2].push(responseLine("Эпизодов", re))
                     } else {
                         msgSections[2].push(responseLine("Эпизодов", anime.episodes.toString()))
-                    }
-                    if (anime.genres.length !== 0) {
-                        let gstr = anime.genres.map((genre) => {
-                            return genre.russian
-                        }).join(", ")
-                        msgSections[2].push(responseLine("Жанры", gstr))
                     }
                     if (anime.score != undefined && anime.score != 0) {
                         msgSections[3].push(responseLine("Оценка", anime.score.toString()))
@@ -248,6 +248,12 @@ bot.on("inline_query", async (ctx) => {
                     const msgSections: string[][] = [[], [], [], []];
                     if (manga.russian != undefined) { msgSections[0].push(responseLine("Название на русском", manga.russian)) }
                     msgSections[0].push(responseLine("Оригинальное название", manga.name))
+                    if (manga.genres.length !== 0) {
+                        let gstr = manga.genres.map((genre) => {
+                            return genre.russian
+                        }).join(", ")
+                        msgSections[0].push(responseLine("Жанры", gstr))
+                    }
                     if (manga.kind != undefined) { msgSections[1].push(responseLine("Тип", manga.kind.toUpperCase())) }
                     if (manga.status != undefined) { msgSections[1].push(responseLine("Статус", manga.status.toUpperCase())) }
                     if (manga.chapters != undefined && manga.volumes != undefined && manga.chapters != 0 && manga.volumes != 0) {
@@ -256,12 +262,6 @@ bot.on("inline_query", async (ctx) => {
                         msgSections[1].push(responseLine("Томов", "\n" + `${manga.volumes}`))
                     } else if (manga.volumes == undefined && manga.chapters != undefined && manga.chapters != 0 && manga.volumes != 0) {
                         msgSections[1].push(responseLine("Глав", "\n" + `${manga.chapters}`))
-                    }
-                    if (manga.genres.length !== 0) {
-                        let gstr = manga.genres.map((genre) => {
-                            return genre.russian
-                        }).join(", ")
-                        msgSections[1].push(responseLine("Жанры", gstr))
                     }
                     if (manga.score != undefined && manga.score != 0) {
                         msgSections[2].push(responseLine("Оценка", manga.score.toString()))
