@@ -3,7 +3,7 @@
 ### Usage (in Telegram chat)
 As inline bot request in message text box:
 ```css
-@botname [anime|manga] [search query]
+@botname [(а)ниме|(a)nime|(m)anga|(м)анга] /запрос/]
 ```
 
 ### Running on server

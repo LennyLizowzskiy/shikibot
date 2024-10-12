@@ -1,10 +1,11 @@
 import { Telegraf } from "telegraf";
-import type { InlineKeyboardButton, InlineQueryResult } from "telegraf/types";
+import type { InlineKeyboardButton, InlineQueryResult, InlineQueryResultArticle, InlineQueryResultPhoto } from "telegraf/types";
 import type { Shikimori, ShikimoriCredentials, ShikiRefreshTokenResponse } from "./src/types";
 import { env, formData, responseLine } from "./src/util";
 import { sleep } from "bun";
 import ky from "ky";
 import { Gql } from "./src/gql_queries";
+import { Message } from "./src/message";
 
 const GIT_REPO = "github.com/LennyLizowzskiy/shikibot"
 
@@ -185,37 +186,39 @@ bot.on("inline_query", async (ctx) => {
             } else {
                 let index = 0
                 resa.forEach((anime) => {
-                    const msgSections: string[][] = [[], [], [], []];
-                    if (anime.russian !== undefined) { msgSections[0].push(responseLine("Название на русском", anime.russian)) }
-                    msgSections[0].push(responseLine("Оригинальное название", anime.name))
+                    const m = new Message()
+
+                    if (anime.russian !== undefined) { m.addResponseLine("Название на русском", anime.russian) }
+                    m.addResponseLine("Оригинальное название", anime.name)
                     if (anime.genres.length !== 0) {
                         let gstr = anime.genres.map((genre) => {
                             return genre.russian
                         }).join(", ")
-                        msgSections[1].push(responseLine("Жанры", gstr))
+
+                        m.addResponseLine("Жанры", gstr)
                     }
-                    if (anime.kind !== undefined) { msgSections[2].push(responseLine("Тип", anime.kind.toUpperCase())) }
-                    if (anime.rating !== undefined) { msgSections[2].push(responseLine("Возрастной рейтинг", anime.rating.toUpperCase())) }
-                    if (anime.status !== undefined) { msgSections[2].push(responseLine("Статус", anime.status.toUpperCase())) }
+                    m.newSection()
+                    if (anime.description !== undefined) {
+                        m.addLine(`Описание:\n<blockquote expandable>${anime.description}</blockquote>\n`)
+                    }
+                    m.newSection()
+                    if (anime.kind !== undefined) { m.addResponseLine("Тип", anime.kind.toUpperCase()) }
+                    if (anime.rating !== undefined) { m.addResponseLine("Возрастной рейтинг", anime.rating.toUpperCase()) }
+                    if (anime.status !== undefined) { m.addResponseLine("Статус", anime.status.toUpperCase()) }
                     if (anime.episodesAired !== anime.episodes && anime.status !== "released" && anime.episodesAired !== 0 && anime.episodes !== 0) {
                         let re = `${anime.episodesAired} / ${anime.episodes}`
                         if (anime.nextEpisodeAt !== undefined) {
                             const nextEpDate = new Date(anime.nextEpisodeAt);
                             re += ` (след. эпизод ожидается ${nextEpDate.getDay()}/${nextEpDate.getMonth()})`
                         }
-                        msgSections[2].push(responseLine("Эпизодов", re))
+                        m.addResponseLine("Эпизодов", re)
                     } else if (anime.kind !== "movie" && anime.kind !== "music" && anime.episodes !== 0) {
-                        msgSections[2].push(responseLine("Эпизодов", anime.episodes.toString()))
+                        m.addResponseLine("Эпизодов", anime.episodes.toString())
                     }
+                    m.newSection()
                     if (anime.score !== undefined && anime.score !== 0) {
-                        msgSections[3].push(responseLine("Оценка", anime.score.toString()))
+                        m.addResponseLine("Оценка", anime.score.toString())
                     }
-
-                    const text = msgSections
-                        .map((ars) => {
-                            return ars.join("\n")
-                        })
-                        .join("\n\n")
 
                     result.push(
                         {
@@ -225,15 +228,18 @@ bot.on("inline_query", async (ctx) => {
                             description: anime.synonyms.join(" / "),
                             thumbnail_url: anime?.poster?.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
                             input_message_content: {
-                                message_text: text,
+                                message_text: m.toString(),
                                 parse_mode: "HTML",
+                                // link_preview_options: {
+                                //     url: `http://cdn.anime-recommend.ru/previews/${anime.id}.jpg`,
+                                // },
                             },
                             reply_markup: {
                                 inline_keyboard: [
                                     [{ text: "Открыть на Shikimori", url: anime.url }]
                                 ] as InlineKeyboardButton[][]
-                            }
-                        }
+                            },
+                        } as InlineQueryResultArticle
                     )
                     index++
                 })
@@ -252,33 +258,35 @@ bot.on("inline_query", async (ctx) => {
             } else {
                 let index = 0
                 resm.forEach((manga) => {
-                    const msgSections: string[][] = [[], [], [], []];
-                    if (manga.russian !== undefined) { msgSections[0].push(responseLine("Название на русском", manga.russian)) }
-                    msgSections[0].push(responseLine("Оригинальное название", manga.name))
+                    const m = new Message();
+
+                    if (manga.russian !== undefined) { m.addResponseLine("Название на русском", manga.russian) }
+                    m.addResponseLine("Оригинальное название", manga.name)
+                    m.newSection()
                     if (manga.genres.length !== 0) {
                         let gstr = manga.genres.map((genre) => {
                             return genre.russian
                         }).join(", ")
-                        msgSections[1].push(responseLine("Жанры", gstr))
+                        m.addResponseLine("Жанры", gstr)
                     }
-                    if (manga.kind !== undefined) { msgSections[2].push(responseLine("Тип", manga.kind.toUpperCase())) }
-                    if (manga.status !== undefined) { msgSections[2].push(responseLine("Статус", manga.status.toUpperCase())) }
+                    m.newSection()
+                    if (manga.description !== undefined) {
+                        m.addLine(`Описание:\n<blockquote expandable>${manga.description}</blockquote>`)
+                    }
+                    m.newSection()
+                    if (manga.kind !== undefined) { m.addResponseLine("Тип", manga.kind.toUpperCase()) }
+                    if (manga.status !== undefined) { m.addResponseLine("Статус", manga.status.toUpperCase()) }
                     if (manga.chapters !== undefined && manga.volumes !== undefined && manga.chapters !== 0 && manga.volumes !== 0) {
-                        msgSections[2].push(responseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`))
+                        m.addResponseLine("Томов/Глав", `${manga.volumes}/${manga.chapters}`)
                     } else if (manga.volumes !== undefined && manga.chapters == undefined && manga.volumes !== 0) {
-                        msgSections[2].push(responseLine("Томов", `${manga.volumes}`))
+                        m.addResponseLine("Томов", `${manga.volumes}`)
                     } else if (manga.volumes === undefined && manga.chapters !== undefined && manga.chapters !== 0) {
-                        msgSections[2].push(responseLine("Глав", `${manga.chapters}`))
+                        m.addResponseLine("Глав", `${manga.chapters}`)
                     }
+                    m.newSection()
                     if (manga.score !== undefined && manga.score !== 0) {
-                        msgSections[3].push(responseLine("Оценка", manga.score.toString()))
+                        m.addResponseLine("Оценка", manga.score.toString())
                     }
-
-                    const text = msgSections
-                        .map((ars) => {
-                            return ars.join("\n")
-                        })
-                        .join("\n\n")
 
                     result.push(
                         {
@@ -288,15 +296,18 @@ bot.on("inline_query", async (ctx) => {
                             description: manga.synonyms.join(" / "),
                             thumbnail_url: manga?.poster?.previewUrl ?? "https://shikimori.one/assets/globals/missing/main.png",
                             input_message_content: {
-                                message_text: text,
+                                message_text: m.toString(),
                                 parse_mode: "HTML",
+                                // link_preview_options: {
+                                //     url: `http://cdn.anime-recommend.ru/previews/${manga.id}.jpg`,
+                                // },
                             },
                             reply_markup: {
                                 inline_keyboard: [
                                     [{ text: "Открыть на Shikimori", url: manga.url }]
                                 ] as InlineKeyboardButton[][]
-                            }
-                        }
+                            },
+                        } as InlineQueryResultArticle
                     )
                     index++
                 })
